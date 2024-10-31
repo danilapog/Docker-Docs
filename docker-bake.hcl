@@ -27,8 +27,8 @@ variable "DS_VERSION_HASH" {
     default = ""
 }
 
-variable "CONTAINER_REGISTRY" {
-    default = "docker.io"
+variable "REGISTRY" {
+    default = 'docker.io'
 }
 
 variable "PRODUCT_URL" {
