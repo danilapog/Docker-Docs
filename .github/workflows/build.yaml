@@ -108,7 +108,7 @@ jobs:
             echo "matrix=$(echo $matrix | jq -c)" >> "$GITHUB_OUTPUT"
             
   build:
-    name: "${{ matrix.name }}:${{ github.event.inputs.tag }}"
+    name: "${{ matrix.name }} ver:${{ github.event.inputs.tag }}"
     runs-on: ubuntu-latest
     needs: [prepare-build]
     strategy:
