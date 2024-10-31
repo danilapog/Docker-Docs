@@ -65,7 +65,7 @@ jobs:
             echo "sourceTag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
             echo "dsHash=$(echo -n "$(date +'%Y.%m.%d-%H%M')" | md5sum | awk '{print $1}')" >> "$GITHUB_OUTPUT"
             echo "docker-username=${docker_username}" >> "$GITHUB_OUTPUT"
-            echo "docker-usertoken=${docker_usertoken}" >> $GITHUB_OUTPUT"
+            echo "docker-usertoken=${docker_usertoken}" >> "$GITHUB_OUTPUT"
 
   build:
     name: "${{ matrix.name }}"
