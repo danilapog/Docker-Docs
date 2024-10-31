@@ -42,7 +42,7 @@ group "apps" {
 target "example" {
     target = "example"
     dockerfile = "${DOCKERFILE}"
-    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-example${PRODUCT_EDITION}:${TAG}"]
+    tags = ["${REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-example${PRODUCT_EDITION}:${TAG}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "PRODUCT_EDITION": "${PRODUCT_EDITION}"
@@ -52,7 +52,7 @@ target "example" {
 target "proxy" {
     target = "proxy"
     dockerfile = "${DOCKERFILE}"
-    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-proxy${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
+    tags = ["${REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-proxy${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "PRODUCT_EDITION": "${PRODUCT_EDITION}"
@@ -64,7 +64,7 @@ target "proxy" {
 target "converter" {
     target = "converter"
     dockerfile = "${DOCKERFILE}"
-    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-converter${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
+    tags = ["${REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-converter${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "PRODUCT_EDITION": "${PRODUCT_EDITION}"
@@ -76,7 +76,7 @@ target "converter" {
 target "docservice" {
     target = "docservice"
     dockerfile = "${DOCKERFILE}"
-    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-docservice${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
+    tags = ["${REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-docservice${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "PRODUCT_EDITION": "${PRODUCT_EDITION}"
@@ -88,7 +88,7 @@ target "docservice" {
 target "utils" {
     target = "utils"
     dockerfile = "${DOCKERFILE}"
-    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-utils:${TAG}"]
+    tags = ["${REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-utils:${TAG}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "DS_VERSION_HASH": "${DS_VERSION_HASH}"
@@ -98,7 +98,7 @@ target "utils" {
 target "balancer" {
     target = "balancer"
     dockerfile = "${DOCKERFILE}"
-    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-balancer:${TAG}"]
+    tags = ["${REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-balancer:${TAG}"]
     platforms = ["linux/amd64", "linux/arm64"]
 }
 
