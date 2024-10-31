@@ -1,6 +1,15 @@
 ### This workflow setup instance then build and push images ###
-name: Multi-arch build 
+name: Multi-arch build
 
+run-name: >- 
+  Build Docs v${{ github.event.inputs.tag }} [
+  ${{ github.event.inputs.docs-community && CE || '' }}
+  ${{ github.event.inputs.docs-enterprise && EE || '' }}
+  ${{ github.event.inputs.docs-developer && DE || '' }}
+  ]
+  ${{ github.event.inputs.docs-balancer && balancer:✔ }}
+  ${{ github.event.inputs.docs-non-plugins && non-plugins:✔ }}
+  
 on:
   workflow_dispatch:
     inputs:
@@ -89,7 +98,7 @@ jobs:
               matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Developer", "dockerfile": "Dockerfile", "edition": "-de", "images": "proxy docservice converter"}]')
             fi
             if ${{ github.event.inputs.docs-non-plugins }}; then
-              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Developer non-plugins", "dockerfile": "Dockerfile", "edition": "-de", "images": "proxy docservice converter"}]')
+              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs non-plugins", "dockerfile": "Dockerfile", "edition": "-de", "images": "proxy docservice converter"}]')
             fi
             if ${{ github.event.inputs.docs-utils }}; then
               matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs utils", "dockerfile": "Dockerfile", "edition": "", "images": "example utils"}]')
@@ -108,7 +117,7 @@ jobs:
             echo "matrix=$(echo $matrix | jq -c)" >> "$GITHUB_OUTPUT"
             
   build:
-    name: "${{ matrix.name }} ver:${{ github.event.inputs.tag }}"
+    name: "${{ matrix.name }} ${{ github.event.inputs.tag }}"
     runs-on: ubuntu-latest
     needs: [prepare-build]
     strategy:
