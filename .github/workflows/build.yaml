@@ -10,7 +10,7 @@ on:
         required: true
       test-repo:
         type: boolean
-        description: 'Push to test repo? Specify tag with rc (ex. 7.0.0-rc25)'
+        description: 'Push to test repo?'
         default: true
       docs-community:
         type: boolean
@@ -46,27 +46,57 @@ jobs:
       dsHash: ${{ steps.prepare.outputs.dsHash }}
       docker-username: ${{ steps.prepare.outputs.docker-username }}
       docker-usertoken: ${{ steps.prepare.outputs.docker-usertoken }}
-      #matrix: 
+      container-registry: ${{ steps.prepare.outputs.container-registry }}
+      matrix: ${{ steps.prepare.outputs.docker-usertoken }}
     steps:
       - name: prepare-build
         id: prepare
         shell: bash
         run: |
-            ### Specify docker credentials ###
+            ### Specify docker credentials & registry ###
             if ! ${{ github.event.inputs.test-repo }}; then
                docker_username=${{ secrets.DOCKER_PROD_USERNAME }}
                docker_usertoken=${{ secrets.DOCKER_PROD_USERTOKEN }}
             elif ${{ github.event.inputs.test-repo }}; then
                docker_username=${{ secrets.DOCKER_TEST_USERNAME }}
                docker_usertoken=${{ secrets.DOCKER_TEST_USERTOKEN }}
+               container_registry=${{ secrets.DOCKER_TEST_REGISTRY }}
+               if ! [[ ${tag} == *rc* ]]; then 
+                  echo "Tag in test repo should contain <rc> postfix..."
+                  echo "Please specify tag with <rc>"
+                  echo 
+                  echo "For example: 7.2.0-rc25"
+                  echo
+                  exit 1
+               fi
             fi
 
             ### Make build matrix ###
+            
+            #matrix=$(echo '{
+            #"include": [
+            #]
+            #}'| jq -c '.include')
+
+            matrix='{"include": []}'
+            if ${{ github.event.inputs.docs-community }}; then
+              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Community", "dockerfile": "Dockerfile", "edition": "", "images": "proxy docservice converter"}]')
+            fi
+            if ${{ github.event.inputs.docs-enterprise }}; then
+              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Enterprise", "dockerfile": "Dockerfile", "edition": "-ee", "images": "proxy docservice converter"}]')
+            fi
+            if ${{ github.event.inputs.docs-developer }}; then
+              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Developer", "dockerfile": "Dockerfile", "edition": "-de", "images": "proxy docservice converter"}]')
+            fi
+            if ${{ github.event.inputs.docs-non-plugins }}; then
+              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Developer non-plugins", "dockerfile": "Dockerfile", "edition": "-de", "images": "proxy docservice converter"}]')
+            fi
             
             echo "sourceTag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
             echo "dsHash=$(echo -n "$(date +'%Y.%m.%d-%H%M')" | md5sum | awk '{print $1}')" >> "$GITHUB_OUTPUT"
             echo "docker-username=${docker_username}" >> "$GITHUB_OUTPUT"
             echo "docker-usertoken=${docker_usertoken}" >> "$GITHUB_OUTPUT"
+            echo "container-registry=${container_registry}" >> "$GITHUB_OUTPUT"
             echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
             
   build:
@@ -75,7 +105,7 @@ jobs:
     needs: [prepare-build]
     strategy:
       fail-fast: false
-      matrix:
+      matrix: ${{fromJSON(needs.prepare.outputs.matrix)}}
         include:
           - edition: ""
             name: "Build Docs Community Edition"
@@ -117,18 +147,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      #- name: Login to Docker Hub
-      #  uses: docker/login-action@v2
+      #- name: Login to Container Registry
+      #  uses: docker/login-action@v3
       #  with:
-      #    username: ${{ github.event.outputs.docker-username }}
-      #    password: ${{ github.event.outputs.docker-usertoken }}
+      #    registry: ${{ needs.prepare-build.outputs.container-registry || 'docker.io' }}
+      #    username: ${{ needs.prepare-build.outputs.docker-username }}
+      #    password: ${{ needs.prepare-build.outputs.docker-usertoken }}
 
       - name: "Build Docs${{ matrix.edition }}"
         env:
+           CONTAINER_REGISTRY: ${{ needs.prepare-build.outputs.registry }}
            DS_VERSION_HASH: ${{ needs.prepare-build.outputs.dsHash }}
            SOURCE_TAG: ${{ needs.prepare-build.outputs.sourceTag }}
            NOPLUG_POSTFIX: ${{ matrix.postfix }}
-           DOCKERFILE: ${{ matrix.dockerfile }}
+           DOCKERFILE: ${{ matrix.dockerfile }} 
         run: |
           : ${DS_VERSION_HASH:?Should be set!}
 
