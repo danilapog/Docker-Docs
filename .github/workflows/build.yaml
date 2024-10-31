@@ -47,7 +47,7 @@ jobs:
       docker-username: ${{ steps.prepare.outputs.docker-username }}
       docker-usertoken: ${{ steps.prepare.outputs.docker-usertoken }}
       container-registry: ${{ steps.prepare.outputs.container-registry }}
-      matrix: ${{ steps.prepare.outputs.docker-usertoken }}
+      matrix: ${{ steps.prepare.outputs.matrix }}
     steps:
       - name: prepare-build
         id: prepare
