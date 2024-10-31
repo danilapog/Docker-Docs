@@ -2,9 +2,40 @@
 name: Multi-arch build 
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Specify release tag (ex. 7.0.0)'
+        type: string
+        required: true
+      test-repo:
+        type: boolean
+        description: 'Push to test repo? Specify tag with rc (ex. 7.0.0-rc25)'
+        default: true
+      docs-community:
+        type: boolean
+        description: 'Build Docs-Community?'
+        default: true
+      docs-enterprise:
+        type: boolean
+        description: 'Build Docs-Enterprise?'
+        default: true
+      docs-developer:
+        type: boolean
+        description: 'Build Docs-Developer?'
+        default: true
+      docs-non-plugins:
+        type: boolean
+        description: 'Build Docs-non-plugins?'
+        default: true
+      docs-utils:
+        type: boolean
+        description: 'Build Docs-utils?'
+        default: true
+      docs-balancer:
+        type: boolean
+        description: 'Build Docs-balancer?'
+        default: true
       
 jobs:
   prepare-build:
@@ -17,8 +48,11 @@ jobs:
       - name: prepare-build
         id: prepare
         run: |
-          echo "sourceTag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          echo "sourceTag=${{ github.event.inputs.tag }}" >> "GITHUB_OUTPUT"
           echo "dsHash=$(echo -n "$(date +'%Y.%m.%d-%H%M')" | md5sum | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+
+          ### Make Build Matrix ###
+          
 
   build:
     name: "${{ matrix.name }} ${{ matrix.edition }}"
@@ -56,12 +90,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-     
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: "Build Docs${{ matrix.edition }}"
         env:
@@ -78,4 +106,4 @@ jobs:
           TAG=$DOCKER_TAG \
             docker buildx bake \
             -f docker-bake.hcl ${{ matrix.images }} \
-            --push
+            --print
