@@ -91,6 +91,12 @@ jobs:
             if ${{ github.event.inputs.docs-non-plugins }}; then
               matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Developer non-plugins", "dockerfile": "Dockerfile", "edition": "-de", "images": "proxy docservice converter"}]')
             fi
+            if ${{ github.event.inputs.docs-utils }}; then
+              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs utils", "dockerfile": "Dockerfile", "edition": "", "images": "example utils"}]')
+            fi
+            if ${{ github.event.inputs.docs-balancer }}; then
+              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs balancer", "dockerfile": "Dockerfile.balancer", "edition": "", "images": "balancer"}]')
+            fi
 
             echo ${matrix} | jq -r 
             echo ${matrix} | jq -c
@@ -107,7 +113,7 @@ jobs:
     needs: [prepare-build]
     strategy:
       fail-fast: false
-      matrix: ${{fromJSON(needs.prepare.outputs.matrix)}}
+      matrix: ${{fromJSON(needs.prepare-build.outputs.matrix)}}
     steps:
       - name: Checkout code 
         uses: actions/checkout@v3
