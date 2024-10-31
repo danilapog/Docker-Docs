@@ -7,8 +7,8 @@ run-name: >-
   ${{ github.event.inputs.docs-enterprise && 'EE' || '' }}
   ${{ github.event.inputs.docs-developer && 'DE' || '' }}
   ]
-  ${{ github.event.inputs.docs-balancer && 'balancer[✓]' }}
-  ${{ github.event.inputs.docs-non-plugins && 'non-plugins[✓]' }}
+  ${{ github.event.inputs.docs-balancer && 'balancer:[✓]' }}
+  ${{ github.event.inputs.docs-non-plugins && 'non-plugins:[✓]' }}
   VER: ${{ github.event.inputs.tag }}
   
 on:
