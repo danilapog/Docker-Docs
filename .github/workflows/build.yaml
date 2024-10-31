@@ -97,7 +97,7 @@ jobs:
             echo "docker-username=${docker_username}" >> "$GITHUB_OUTPUT"
             echo "docker-usertoken=${docker_usertoken}" >> "$GITHUB_OUTPUT"
             echo "container-registry=${container_registry}" >> "$GITHUB_OUTPUT"
-            echo "matrix=$(echo ${matrix} | jq -c)" >> "$GITHUB_OUTPUT"
+            echo "matrix=$(echo ${matrix} | jq -c '.include')" >> "$GITHUB_OUTPUT"
             
   build:
     name: "${{ matrix.name }}:${{ github.event.inputs.tag }}"
