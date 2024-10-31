@@ -152,9 +152,8 @@ jobs:
           : ${DS_VERSION_HASH:?Should be set!}
 
           DS_VERSION_HASH=${DS_VERSION_HASH} \
-          DOCKER_TAG=$(echo ${SOURCE_TAG} | sed 's/^.//') \
           PRODUCT_EDITION=${{ matrix.edition }} \
-          TAG=$DOCKER_TAG \
+          TAG=${SOURCE_TAG} \
             docker buildx bake \
             -f docker-bake.hcl ${{ matrix.images }} \
             --print
