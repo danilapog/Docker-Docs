@@ -106,37 +106,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{fromJSON(needs.prepare.outputs.matrix)}}
-        include:
-          - edition: ""
-            name: "Build Docs Community Edition"
-            dockerfile: "Dockerfile"
-            images: "proxy docservice converter"
-
-          - edition: "-ee"
-            name: "Build Docs Enterprise Edition"
-            dockerfile: "Dockerfile"
-            images: "proxy docservice converter"
-
-          - edition: "-de"
-            name: "Build Docs Developer Edition"
-            dockerfile: "Dockerfile"
-            images: "proxy docservice converter"
-                      
-          - edition: "-de"
-            name: "Build Docs Developer Edition non-plugins"
-            dockerfile: "Dockerfile.noplugins"
-            images: "proxy docservice converter"
-            postfix: "-noplugins"
-
-          - edition: ""
-            name: "Build utils"
-            dockerfile: "Dockerfile"
-            images: "example utils"
-
-          - edition: ""
-            name: "Build balancer"
-            dockerfile: "Dockerfile.balancer"
-            images: "balancer"
     steps:
       - name: Checkout code 
         uses: actions/checkout@v3
