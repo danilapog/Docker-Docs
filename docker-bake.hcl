@@ -31,6 +31,10 @@ variable "CONTAINER_REGISTRY" {
     default = "docker.io"
 }
 
+variable "PRODUCT_URL" {
+    default = ""
+}
+
 group "apps" {
     targets = ["proxy", "converter", "docservice", "example"]
 }
