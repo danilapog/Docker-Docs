@@ -46,6 +46,7 @@ jobs:
       dsHash: ${{ steps.prepare.outputs.dsHash }}
       docker-username: ${{ steps.prepare.outputs.docker-username }}
       docker-usertoken: ${{ steps.prepare.outputs.docker-usertoken }}
+      #matrix: 
     steps:
       - name: prepare-build
         id: prepare
@@ -53,22 +54,23 @@ jobs:
         run: |
             ### Specify docker credentials ###
             if ! ${{ github.event.inputs.test-repo }}; then
-               echo "PROD REPO SPECIFYED>>>>>>>>>>"
                docker_username=${{ secrets.DOCKER_PROD_USERNAME }}
                docker_usertoken=${{ secrets.DOCKER_PROD_USERTOKEN }}
             elif ${{ github.event.inputs.test-repo }}; then
-               echo "TEST REPO SPECIFYED>>>>>>>>>>"
-               docker_username=$(${{ secrets.DOCKER_TEST_USERNAME }})
-               docker_usertoken=$(${{ secrets.DOCKER_TEST_USERTOKEN }})
+               docker_username=${{ secrets.DOCKER_TEST_USERNAME }}
+               docker_usertoken=${{ secrets.DOCKER_TEST_USERTOKEN }}
             fi
-             
+
+            ### Make build matrix ###
+            
             echo "sourceTag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
             echo "dsHash=$(echo -n "$(date +'%Y.%m.%d-%H%M')" | md5sum | awk '{print $1}')" >> "$GITHUB_OUTPUT"
             echo "docker-username=${docker_username}" >> "$GITHUB_OUTPUT"
             echo "docker-usertoken=${docker_usertoken}" >> "$GITHUB_OUTPUT"
-
+            echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+            
   build:
-    name: "${{ matrix.name }}"
+    name: "${{ matrix.name }}:${{ github.event.inputs.tag }}"
     runs-on: ubuntu-latest
     needs: [prepare-build]
     strategy:
