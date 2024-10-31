@@ -27,6 +27,10 @@ variable "DS_VERSION_HASH" {
     default = ""
 }
 
+variable "CONTAINER_REGISTRY" {
+    default = "docker.io"
+}
+
 group "apps" {
     targets = ["proxy", "converter", "docservice", "example"]
 }
@@ -34,7 +38,7 @@ group "apps" {
 target "example" {
     target = "example"
     dockerfile = "${DOCKERFILE}"
-    tags = ["docker.io/${COMPANY_NAME}/${PREFIX_NAME}-example${PRODUCT_EDITION}:${TAG}"]
+    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-example${PRODUCT_EDITION}:${TAG}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "PRODUCT_EDITION": "${PRODUCT_EDITION}"
@@ -44,40 +48,43 @@ target "example" {
 target "proxy" {
     target = "proxy"
     dockerfile = "${DOCKERFILE}"
-    tags = ["docker.io/${COMPANY_NAME}/${PREFIX_NAME}-proxy${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
+    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-proxy${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "PRODUCT_EDITION": "${PRODUCT_EDITION}"
         "DS_VERSION_HASH": "${DS_VERSION_HASH}"
+        "PRODUCT_URL": "${PRODUCT_URL}"
     }
 }
 
 target "converter" {
     target = "converter"
     dockerfile = "${DOCKERFILE}"
-    tags = ["docker.io/${COMPANY_NAME}/${PREFIX_NAME}-converter${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
+    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-converter${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "PRODUCT_EDITION": "${PRODUCT_EDITION}"
         "DS_VERSION_HASH": "${DS_VERSION_HASH}"
+        "PRODUCT_URL": "${PRODUCT_URL}"
     }
 }
 
 target "docservice" {
     target = "docservice"
     dockerfile = "${DOCKERFILE}"
-    tags = ["docker.io/${COMPANY_NAME}/${PREFIX_NAME}-docservice${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
+    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-docservice${PRODUCT_EDITION}:${TAG}${NOPLUG_POSTFIX}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "PRODUCT_EDITION": "${PRODUCT_EDITION}"
         "DS_VERSION_HASH": "${DS_VERSION_HASH}"
+        "PRODUCT_URL": "${PRODUCT_URL}"
     }
 }
 
 target "utils" {
     target = "utils"
     dockerfile = "${DOCKERFILE}"
-    tags = ["docker.io/${COMPANY_NAME}/${PREFIX_NAME}-utils:${TAG}"]
+    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-utils:${TAG}"]
     platforms = ["linux/amd64", "linux/arm64"]
     args = {
         "DS_VERSION_HASH": "${DS_VERSION_HASH}"
@@ -87,7 +94,7 @@ target "utils" {
 target "balancer" {
     target = "balancer"
     dockerfile = "${DOCKERFILE}"
-    tags = ["docker.io/${COMPANY_NAME}/${PREFIX_NAME}-balancer:${TAG}"]
+    tags = ["${CONTAINER_REGISTRY}/${COMPANY_NAME}/${PREFIX_NAME}-balancer:${TAG}"]
     platforms = ["linux/amd64", "linux/arm64"]
 }
 
