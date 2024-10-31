@@ -58,8 +58,8 @@ jobs:
                docker-usertoken=${{ secrets.DOCKER_PROD_USERTOKEN }}
             elif ${{ github.event.inputs.test-repo }}; then
                echo "TEST REPO SPECIFYED>>>>>>>>>>"
-               docker-username=${{ secrets.DOCKER_TEST_USERNAME }}
-               docker-usertoken=${{ secrets.DOCKER_TEST_USERTOKEN }}
+               docker-username=${{ secrets.DOCKER_TEST_USERNAME }}value
+               docker-usertoken=${{ secrets.DOCKER_TEST_USERTOKEN }}value
             fi
              
             echo "sourceTag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
@@ -114,6 +114,12 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+
+      #- name: Login to Docker Hub
+      #  uses: docker/login-action@v2
+      #  with:
+      #    username: ${{ github.event.outputs.docker-username }}
+      #    password: ${{ github.event.outputs.docker-usertoken }}
 
       - name: "Build Docs${{ matrix.edition }}"
         env:
