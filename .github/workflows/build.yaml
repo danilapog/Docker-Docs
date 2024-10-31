@@ -91,13 +91,15 @@ jobs:
             if ${{ github.event.inputs.docs-non-plugins }}; then
               matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Developer non-plugins", "dockerfile": "Dockerfile", "edition": "-de", "images": "proxy docservice converter"}]')
             fi
-            
+
+            echo ${matrix} | jq -r 
+            echo ${matrix} | jq -c
             echo "sourceTag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
             echo "dsHash=$(echo -n "$(date +'%Y.%m.%d-%H%M')" | md5sum | awk '{print $1}')" >> "$GITHUB_OUTPUT"
             echo "docker-username=${docker_username}" >> "$GITHUB_OUTPUT"
             echo "docker-usertoken=${docker_usertoken}" >> "$GITHUB_OUTPUT"
             echo "container-registry=${container_registry}" >> "$GITHUB_OUTPUT"
-            echo "matrix=$(echo ${matrix} | jq -c '{include: [.include[]')" >> "$GITHUB_OUTPUT"
+            echo "matrix=$(echo $matrix | jq -c)" >> "$GITHUB_OUTPUT"
             
   build:
     name: "${{ matrix.name }}:${{ github.event.inputs.tag }}"
