@@ -55,19 +55,30 @@ jobs:
           
 
   build:
-    name: "${{ matrix.name }} ${{ matrix.edition }}"
+    name: "${{ matrix.name }}"
     runs-on: ubuntu-latest
     needs: [prepare-build]
     strategy:
       fail-fast: false
       matrix:
-        name: ["Build Docs"]
-        dockerfile: ["Dockerfile"]
-        edition: [ "", "-ee", "-de"]
-        images: [ "proxy docservice converter" ]
         include:
+          - edition: ""
+            name: "Build Docs Community Edition"
+            dockerfile: "Dockerfile"
+            images: "proxy docservice converter"
+
+          - edition: "-ee"
+            name: "Build Docs Enterprise Edition"
+            dockerfile: "Dockerfile"
+            images: "proxy docservice converter"
+
           - edition: "-de"
-            name: "Build Docs non-plugins"
+            name: "Build Docs Developer Edition"
+            dockerfile: "Dockerfile"
+            images: "proxy docservice converter"
+                      
+          - edition: "-de"
+            name: "Build Docs Developer Edition non-plugins"
             dockerfile: "Dockerfile.noplugins"
             images: "proxy docservice converter"
             postfix: "-noplugins"
