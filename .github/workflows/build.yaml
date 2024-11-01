@@ -46,6 +46,10 @@ on:
         type: boolean
         description: 'Build Docs-balancer'
         default: true
+      product-url:
+        type: string
+        required: false
+        description: 'Specify full product URL in needed'
       
 jobs:
   prepare-build:
@@ -63,14 +67,8 @@ jobs:
         id: prepare
         shell: bash
         run: |
-            ### Specify docker credentials & registry ###
-            if ! ${{ github.event.inputs.test-repo }}; then
-               docker_username=${{ secrets.DOCKER_PROD_USERNAME }}
-               docker_usertoken=${{ secrets.DOCKER_PROD_USERTOKEN }}
-            elif ${{ github.event.inputs.test-repo }}; then
-               docker_username=${{ secrets.DOCKER_TEST_USERNAME }}
-               docker_usertoken=${{ secrets.DOCKER_TEST_USERTOKEN }}
-               container_registry=${{ secrets.DOCKER_TEST_REGISTRY }}
+            ### Check that test-repo specifyed with rc postfix ###
+            if ${{ github.event.inputs.test-repo }}; then
                if ! [[ ${{ github.event.inputs.tag }} == *rc* ]]; then 
                   echo -e '\033[33m     ⚠ ALERT ⚠     \033[0m'
                   echo -e 'Test-Repo: enabled[\033[32m✓\033[0m]'
@@ -133,13 +131,14 @@ jobs:
           username: ${{ github.event.inputs.test-repo && secrets.DOCKER_TEST_USERNAME || secrets.DOCKER_PROD_USERNAME }}
           password: ${{ github.event.inputs.test-repo && secrets.DOCKER_TEST_USERTOKEN|| secrets.DOCKER_PROD_USERTOKEN }}
 
-      - name: "Build Docs${{ matrix.edition }}"
+      - name: "${{ matrix.name }}"
         env:
            CONTAINER_REGISTRY: ${{ github.event.inputs.test-repo && secrets.DOCKER_TEST_REGISTRY || 'docker.io' }}
            DS_VERSION_HASH: ${{ needs.prepare-build.outputs.dsHash }}
            SOURCE_TAG: ${{ needs.prepare-build.outputs.sourceTag }}
            NOPLUG_POSTFIX: ${{ matrix.postfix }}
-           DOCKERFILE: ${{ matrix.dockerfile }} 
+           DOCKERFILE: ${{ matrix.dockerfile }}
+           PRODUCT_URL: ${{ github.event.inputs.product-url }}
         run: |
           : ${DS_VERSION_HASH:?Should be set!}
 
