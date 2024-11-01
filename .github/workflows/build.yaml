@@ -3,13 +3,13 @@ name: Multi-arch build
 
 run-name: >- 
   Build Docs: [
-  ${{ github.event.inputs.docs-community && 'CE' || '-' }}
-  ${{ github.event.inputs.docs-enterprise && 'EE' || '-' }}
-  ${{ github.event.inputs.docs-developer && 'DE' || '-' }}
+  ${{ inputs.docs-community && 'CE' || '-' }}
+  ${{ inputs.docs-enterprise && 'EE' || '-' }}
+  ${{ inputs.docs-developer && 'DE' || '-' }}
   ]
-  ${{ github.event.inputs.docs-balancer && 'balancer: [✓]' }}
-  ${{ github.event.inputs.docs-non-plugins && 'non-plugins: [✓]' }}
-  VER: [${{ github.event.inputs.tag }}]
+  ${{ inputs.docs-balancer && 'balancer: [✓]' }}
+  ${{ inputs.docs-non-plugins && 'non-plugins: [✓]' }}
+  VER: [${{ inputs.tag }}]
   
 on:
   workflow_dispatch:
