@@ -73,10 +73,9 @@ jobs:
                container_registry=${{ secrets.DOCKER_TEST_REGISTRY }}
                if ! [[ ${{ github.event.inputs.tag }} == *rc* ]]; then 
                   echo -e '\033[33m------⚠ ALERT ⚠------\033[0m'
-                  echo -e '\033[33mTest-Repo enabled... Please specify tag with <rc>\033[0m'
-                  echo 
+                  echo -e '\033[33mTest-Repo: enabled[✓]\033[0m'
+                  echo -e '\033[33mPlease specify tag with <rc>...\033[0m'
                   echo -e '\033[33mFor example:\033[0m ${{ github.event.inputs.tag }}-rc25'
-                  echo
                   exit 1
                fi
             fi
@@ -136,7 +135,7 @@ jobs:
 
       - name: "Build Docs${{ matrix.edition }}"
         env:
-           CONTAINER_REGISTRY: ${{ needs.prepare-build.outputs.registry }}
+           CONTAINER_REGISTRY: ${{ github.event.inputs.test-repo && secrets.DOCKER_TEST_REGISTRY || 'docker.io' }}
            DS_VERSION_HASH: ${{ needs.prepare-build.outputs.dsHash }}
            SOURCE_TAG: ${{ needs.prepare-build.outputs.sourceTag }}
            NOPLUG_POSTFIX: ${{ matrix.postfix }}
