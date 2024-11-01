@@ -20,31 +20,31 @@ on:
         required: true
       test-repo:
         type: boolean
-        description: 'Push to test repo?'
+        description: 'Push to test repo'
         default: true
       docs-community:
         type: boolean
-        description: 'Build Docs-Community?'
+        description: 'Build Docs-Community'
         default: true
       docs-enterprise:
         type: boolean
-        description: 'Build Docs-Enterprise?'
+        description: 'Build Docs-Enterprise'
         default: true
       docs-developer:
         type: boolean
-        description: 'Build Docs-Developer?'
+        description: 'Build Docs-Developer'
         default: true
       docs-non-plugins:
         type: boolean
-        description: 'Build Docs-non-plugins?'
+        description: 'Build Docs-non-plugins'
         default: true
       docs-utils:
         type: boolean
-        description: 'Build Docs-utils?'
+        description: 'Build Docs-utils'
         default: true
       docs-balancer:
         type: boolean
-        description: 'Build Docs-balancer?'
+        description: 'Build Docs-balancer'
         default: true
       
 jobs:
