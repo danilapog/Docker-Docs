@@ -82,16 +82,10 @@ jobs:
             ### Make build matrix ###
             matrix='{"include": []}'
             if ${{ github.event.inputs.docs-community }}; then
-              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Community", \
-                                                      "dockerfile": "Dockerfile", \
-                                                      "edition": "", \
-                                                      "images": "proxy docservice converter"}]')
+              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Community", "dockerfile": "Dockerfile", "edition": "", "images": "proxy docservice converter"}]')
             fi
             if ${{ github.event.inputs.docs-enterprise }}; then
-              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Enterprise", \
-                                                        "dockerfile": "Dockerfile", \
-                                                        "edition": "-ee", \
-                                                        "images": "proxy docservice converter"}]')
+              matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Enterprise", "dockerfile": "Dockerfile", "edition": "-ee", "images": "proxy docservice converter"}]')
             fi
             if ${{ github.event.inputs.docs-developer }}; then
               matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Developer", "dockerfile": "Dockerfile", "edition": "-de", "images": "proxy docservice converter"}]')
