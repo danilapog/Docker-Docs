@@ -9,6 +9,7 @@ run-name: >-
   ]
   ${{ inputs.docs-balancer && 'balancer: [✓]' || '' }}
   ${{ inputs.docs-non-plugins && 'non-plugins: [✓]' || '' }}
+  ${{ inputs.docs-utils && 'utils: [✓]' || '' }}
   VER: [${{ inputs.tag }}]
   
 on:
