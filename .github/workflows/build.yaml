@@ -3,9 +3,9 @@ name: Multi-arch build
 
 run-name: >- 
   Build Docs: [
-  ${{ github.event.inputs.docs-community && 'CE' || '' }}
-  ${{ github.event.inputs.docs-enterprise && 'EE' || '' }}
-  ${{ github.event.inputs.docs-developer && 'DE' || '' }}
+  ${{ github.event.inputs.docs-community && 'CE' || '-' }}
+  ${{ github.event.inputs.docs-enterprise && 'EE' || '-' }}
+  ${{ github.event.inputs.docs-developer && 'DE' || '-' }}
   ]
   ${{ github.event.inputs.docs-balancer && 'balancer: [✓]' }}
   ${{ github.event.inputs.docs-non-plugins && 'non-plugins: [✓]' }}
@@ -75,19 +75,13 @@ jobs:
                   echo "Tag in test repo should contain <rc> postfix..."
                   echo "Please specify tag with <rc>"
                   echo 
-                  echo "For example: 7.2.0-rc25"
+                  echo "For example: ${{ github.event.inputs.tag }}-rc25"
                   echo
                   exit 1
                fi
             fi
 
             ### Make build matrix ###
-            
-            #matrix=$(echo '{
-            #"include": [
-            #]
-            #}'| jq -c '.include')
-
             matrix='{"include": []}'
             if ${{ github.event.inputs.docs-community }}; then
               matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs Community", "dockerfile": "Dockerfile", "edition": "", "images": "proxy docservice converter"}]')
@@ -108,8 +102,7 @@ jobs:
               matrix=$(echo $matrix | jq '.include += [{"name": "Build Docs balancer", "dockerfile": "Dockerfile.balancer", "edition": "", "images": "balancer"}]')
             fi
 
-            echo ${matrix} | jq -r 
-            echo ${matrix} | jq -c
+            ### Specify outputs ###
             echo "sourceTag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
             echo "dsHash=$(echo -n "$(date +'%Y.%m.%d-%H%M')" | md5sum | awk '{print $1}')" >> "$GITHUB_OUTPUT"
             echo "docker-username=${docker_username}" >> "$GITHUB_OUTPUT"
@@ -134,12 +127,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      #- name: Login to Container Registry
-      #  uses: docker/login-action@v3
-      #  with:
-      #    registry: ${{ needs.prepare-build.outputs.container-registry || 'docker.io' }}
-      #    username: ${{ needs.prepare-build.outputs.docker-username }}
-      #    password: ${{ needs.prepare-build.outputs.docker-usertoken }}
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ github.event.inputs.test-repo && ${{ secrets.DOCKER_TEST_REGISTRY }} || 'docker.io' }}
+          username: ${{ github.event.inputs.test-repo && ${{ secrets.DOCKER_TEST_USERNAME }} || ${{ secrets.DOCKER_PROD_USERNAME }} }}
+          password: ${{ github.event.inputs.test-repo && ${{ secrets.DOCKER_TEST_USERTOKEN }} || ${{ secrets.DOCKER_PROD_USERTOKEN }} }}
 
       - name: "Build Docs${{ matrix.edition }}"
         env:
