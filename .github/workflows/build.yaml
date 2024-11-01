@@ -137,7 +137,7 @@ jobs:
            REGISTRY: ${{ github.event.inputs.test-repo && secrets.DOCKER_TEST_REGISTRY || 'docker.io' }}
            DS_VERSION_HASH: ${{ needs.prepare-build.outputs.dsHash }}
            SOURCE_TAG: ${{ needs.prepare-build.outputs.sourceTag }}
-           NOPLUG_POSTFIX: ${{ matrix.postfix }}
+           NOPLUG_POSTFIX: ${{ github.event.inputs.docs-non-plugins && '-noplugins' }}
            DOCKERFILE: ${{ matrix.dockerfile }}
            PRODUCT_URL: ${{ github.event.inputs.product-url }}
         run: |
