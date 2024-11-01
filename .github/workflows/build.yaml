@@ -73,9 +73,9 @@ jobs:
                container_registry=${{ secrets.DOCKER_TEST_REGISTRY }}
                if ! [[ ${{ github.event.inputs.tag }} == *rc* ]]; then 
                   echo -e '\033[33m⚠ALERT⚠\033[0m'
-                  echo -e '\033[33mTest-Repo enabled. Please specify tag with <rc>\033[0m'
+                  echo -e '\033[33mTest-Repo enabled... Please specify tag with <rc>\033[0m'
                   echo 
-                  echo -e 'For example: ${{ github.event.inputs.tag }}\033[31m-rc25\033[0m'
+                  echo -e '\033[33mFor example:\033[0m ${{ github.event.inputs.tag }}-rc25'
                   echo
                   exit 1
                fi
