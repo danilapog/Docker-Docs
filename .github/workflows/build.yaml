@@ -72,10 +72,10 @@ jobs:
                docker_usertoken=${{ secrets.DOCKER_TEST_USERTOKEN }}
                container_registry=${{ secrets.DOCKER_TEST_REGISTRY }}
                if ! [[ ${{ github.event.inputs.tag }} == *rc* ]]; then 
-                  echo "Tag in test repo should contain <rc> postfix..."
-                  echo "Please specify tag with <rc>"
+                  echo -e '\033[31mTag in test repo should contain <rc> postfix...\033[0m'
+                  echo -e '\033[31mPlease specify tag with <rc>\033[0m'
                   echo 
-                  echo "For example: ${{ github.event.inputs.tag }}-rc25"
+                  echo -e '\033[31mFor example: ${{ github.event.inputs.tag }}-rc25\033[0m'
                   echo
                   exit 1
                fi
