@@ -133,7 +133,7 @@ jobs:
 
       - name: "${{ matrix.name }}"
         env:
-           CONTAINER_REGISTRY: ${{ github.event.inputs.test-repo && secrets.DOCKER_TEST_REGISTRY || 'docker.io' }}
+           REGISTRY: ${{ github.event.inputs.test-repo && secrets.DOCKER_TEST_REGISTRY || 'docker.io' }}
            DS_VERSION_HASH: ${{ needs.prepare-build.outputs.dsHash }}
            SOURCE_TAG: ${{ needs.prepare-build.outputs.sourceTag }}
            NOPLUG_POSTFIX: ${{ matrix.postfix }}
