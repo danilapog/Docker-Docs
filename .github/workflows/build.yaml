@@ -7,8 +7,8 @@ run-name: >-
   ${{ inputs.docs-enterprise && 'EE' || '-' }}
   ${{ inputs.docs-developer && 'DE' || '-' }}
   ]
-  ${{ inputs.docs-balancer && 'balancer: [✓]' }}
-  ${{ inputs.docs-non-plugins && 'non-plugins: [✓]' }}
+  ${{ inputs.docs-balancer && 'balancer: [✓]' || '' }}
+  ${{ inputs.docs-non-plugins && 'non-plugins: [✓]' || '' }}
   VER: [${{ inputs.tag }}]
   
 on:
