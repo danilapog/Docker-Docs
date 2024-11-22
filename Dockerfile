@@ -14,7 +14,8 @@ ENV COMPANY_NAME=$COMPANY_NAME \
     NODE_ENV=production-linux \
     NODE_CONFIG_DIR=/etc/$COMPANY_NAME/documentserver
 
-RUN yum install sudo -y && \
+RUN uname -m && \
+    yum install sudo -y && \
     yum install shadow-utils -y && \
     amazon-linux-extras install epel -y && \
     yum install procps-ng tar wget -y && \
