@@ -8,13 +8,15 @@ LABEL maintainer Ascensio System SIA <support@onlyoffice.com>
 
 ARG COMPANY_NAME=onlyoffice
 ARG DS_VERSION_HASH
+ARG TARGETARCH
 ENV COMPANY_NAME=$COMPANY_NAME \
     APPLICATION_NAME=$COMPANY_NAME \
     DS_VERSION_HASH=$DS_VERSION_HASH \
     NODE_ENV=production-linux \
     NODE_CONFIG_DIR=/etc/$COMPANY_NAME/documentserver
 
-RUN uname -m && \
+RUN echo ${TARGETARCH} && \
+    uname -m && \
     yum install sudo -y && \
     yum install shadow-utils -y && \
     amazon-linux-extras install epel -y && \
