@@ -267,10 +267,14 @@ FROM python:3.11 AS builder
 RUN pip install redis psycopg2  PyMySQL pika python-qpid-proton func_timeout requests kubernetes flask
 FROM python:3.11-slim AS utils
 ARG DS_VERSION_HASH
+ARG TARGETARCH
 ENV DS_VERSION_HASH=$DS_VERSION_HASH
 COPY --from=ds-base /usr/local/bin/dumb-init /usr/local/bin/dumb-init
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 RUN apt update && \
+    echo "CHECK>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" && \
+    echo "$(uname -m)" && \
+    echo ${TARGETARCH} && \
     apt-get install -y curl wget gnupg2 lsb-release jq xxd procps libaio1 unzip && \
     echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
