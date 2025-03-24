@@ -141,7 +141,7 @@ jobs:
                               "name": "Build Docs utils", 
                               "dockerfile": "Dockerfile", 
                               "edition": "", 
-                              "images": "example utils"
+                              "images": "utils"
                       }
               ]')
             fi
