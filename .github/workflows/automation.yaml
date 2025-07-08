@@ -18,6 +18,8 @@ env:
   TAG: ${{ github.event.inputs.tag }}
   REGISTRY: ${{ github.event.inputs.registry }}
   DOCKERFILE: "Dockerfile"
+  # Value should keep hub.docker company name
+  COMPANY_NAME: placeholder
       
 jobs:
   build:
