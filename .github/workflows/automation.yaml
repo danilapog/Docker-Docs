@@ -28,8 +28,8 @@ jobs:
       matrix:
         name: ["Build Docs"]
         dockerfile: ["Dockerfile"]
-        edition: ["-de"]
-        images: [ "proxy docservice converter utils example" ]
+        edition: ["-de", "-ee"]
+        images: [ "balancer proxy docservice converter utils example" ]
     steps:
       - name: Checkout code 
         uses: actions/checkout@v4
@@ -52,5 +52,5 @@ jobs:
           PRODUCT_EDITION: ${{ matrix.edition }}
         run: |
             docker buildx bake \
-            -f docker-bake.hcl ${{ matrix.images }} \
+            -f .github/automation/docker-bake.hcl ${{ matrix.images }} \
             --push
