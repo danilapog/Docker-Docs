@@ -13,6 +13,11 @@ on:
         type: string
         required: true
         default: 'docker.io'
+      release_version:
+        description: 'Optional. Specify custom docs version that will be installed inside container (ex. 8.0.0)'
+        type: string
+        required: false
+        default: ''
 
 env:
   TAG: ${{ github.event.inputs.tag }}
@@ -20,6 +25,7 @@ env:
   DOCKERFILE: "Dockerfile"
   # Value should keep hub.docker company name
   COMPANY_NAME: placeholder
+  RELEASE_VERSION: ${{ github.event.inputs.release_version }}
       
 jobs:
   build:
@@ -53,6 +59,8 @@ jobs:
         env:
           PRODUCT_EDITION: ${{ matrix.edition }}
         run: |
+            DS_VERSION_HASH=$(echo -n "$(date +'%Y.%m.%d-%H%M')" | md5sum | awk '{print $1}')
+            export DS_VERSION_HASH
             docker buildx bake \
             -f .github/automation/docker-bake.hcl ${{ matrix.images }} \
             --push
