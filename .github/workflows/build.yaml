@@ -211,4 +211,4 @@ jobs:
 
           docker buildx bake \
             -f docker-bake.hcl ${IMAGES} \
-            --print
+            --push
