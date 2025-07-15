@@ -190,7 +190,8 @@ jobs:
            VERSION: ${{ github.event.inputs.version }}
            TEST_REPO: ${{ github.event.inputs.test-repo }}
            PRODUCT_EDITION: ${{ matrix.edition }}
-           PACKAGE_URL: ${{  github.event.inputs.package-url }}
+           PACKAGE_URL: ${{ github.event.inputs.package-url }}
+           COMPANY_NAME: ${{ env.COMPANY_NAME }}
         run: |
           : ${DS_VERSION_HASH:?Should be set!}
 
@@ -210,4 +211,4 @@ jobs:
 
           docker buildx bake \
             -f docker-bake.hcl ${IMAGES} \
-            --push
+            --print
