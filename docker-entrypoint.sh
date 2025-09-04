@@ -1,6 +1,27 @@
 #!/usr/bin/env bash
 set -e
 
+function annotate_status() {
+  KEY="onlyoffice.kubernetes/docservice-status"
+  API="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}"
+  TOKEN="/var/run/secrets/kubernetes.io/serviceaccount/token"
+  CA="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+
+payload=$(cat <<JSON
+{"metadata":{"annotations":{"$KEY":"running"}}}
+JSON
+)
+
+  for i in {1..5}; do
+    curl -sS --fail -XPATCH \
+      -H "Authorization: Bearer $(cat "$TOKEN")" \
+      -H "Content-Type: application/merge-patch+json" \
+      --cacert "$CA" \
+      "$API/api/v1/namespaces/${POD_NAMESPACE}/pods/${POD_NAME}" \
+      -d "$payload" && break || sleep 1
+  done
+}
+
 if [[ -n ${LOG_LEVEL} ]]; then
   sed 's/\(^.\+"level":\s*"\).\+\(".*$\)/\1'$LOG_LEVEL'\2/g' -i /etc/$COMPANY_NAME/documentserver/log4js/production.json
 fi
@@ -176,5 +197,11 @@ export NODE_CONFIG='{
     "storageFolderName": "files"
   }
 }'
+
+# Patch annotation for docservice Kubernetes pod
+# Annotation will content docservice status runned/finished
+if [[ ${ANNOTATE_STATUS} ]]; then
+   annotate_status
+fi
 
 exec "$@"
