@@ -177,4 +177,10 @@ export NODE_CONFIG='{
   }
 }'
 
+# This condition used only in Kubernetes-Docs-Shards
+# Remove marker file when documentserver pod is starting
+if [[ -f /scripts/results/status.txt ]]; then
+   rm -f /scripts/results/status.txt
+fi
+   
 exec "$@"
