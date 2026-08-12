@@ -1,6 +1,6 @@
 ### This workflow setup instance then build and push images ###
 name: Multi-arch build
-
+ 
 run-name: >-
   Build Docs: [
   ${{ inputs.edition }}
@@ -8,7 +8,7 @@ run-name: >-
   ${{ inputs.docs-balancer && 'balancer: [✓]' || '' }}
   ${{ inputs.docs-utils && 'utils: [✓]' || '' }}
   VER: [${{ inputs.tag }}]
-
+ 
 on:
   workflow_dispatch:
     inputs:
@@ -70,7 +70,7 @@ jobs:
             [ ${{ github.event.inputs.amd64 }} = true ] && PLATFORMS+=("amd64")
             [ ${{ github.event.inputs.arm64 }} = true ] && PLATFORMS+=("arm64")
             PLATFORM=$(echo ${PLATFORMS[*]/#/linux/} | tr ' ' ',')
-
+ 
             ### Make build matrix ###
             matrix='{"include": []}'
             editions=($(printf "%s\n" ${{ github.event.inputs.edition }} | tr ',' ' '))
@@ -100,7 +100,7 @@ jobs:
                    ;;
               esac
             done
-
+ 
             if ${{ github.event.inputs.docs-utils }}; then
               matrix=$(echo $matrix | jq '.include += [
                       {
@@ -121,12 +121,12 @@ jobs:
                       }
               ]')
             fi
-
+ 
             ### Specify outputs ###
             echo "dsHash=$(echo -n "$(date +'%Y.%m.%d-%H%M')" | md5sum | awk '{print $1}')" >> "$GITHUB_OUTPUT"
             echo "matrix=$(echo $matrix | jq -c)" >> "$GITHUB_OUTPUT"
             echo "platform=${PLATFORM[@]}" >> "$GITHUB_OUTPUT"
-
+ 
   build:
     name: "${{ matrix.name }} ${{ github.event.inputs.tag }}"
     runs-on: ubuntu-latest
@@ -137,20 +137,20 @@ jobs:
     steps:
       - name: Checkout code 
         uses: actions/checkout@v4
-
+ 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-
+ 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
+ 
       - name: Login to Container Registry
         uses: docker/login-action@v3
         with:
           registry: 'docker.io'
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
+ 
       - name: "${{ matrix.name }}"
         env:
            REGISTRY: 'docker.io'
@@ -164,20 +164,21 @@ jobs:
            PRODUCT_EDITION: ${{ matrix.edition }}
            PACKAGE_URL: ${{ github.event.inputs.package-url }}
            REF_BRANCH: ${{ github.ref_name }}
+           GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
         run: |
           : ${DS_VERSION_HASH:?Should be set!}
-
+ 
           ## Set-up env if version specifyed ##
           if [[ -n "${VERSION}" ]]; then
              export RELEASE_VERSION="-${VERSION}"
           fi
-
+ 
           ## Set-up env for 4testing build ##
           if "${TEST_REPO}"; then
             echo "Build in repo: 4testing"
             export PREFIX_NAME="4testing-"
           fi
-
+ 
           ## Set-up env if s3 url enabled ##
           if [[ "${PACKAGE_URL}" == "s3" ]]; then
             echo "S3 package url was specified..."
@@ -185,22 +186,26 @@ jobs:
             export PRODUCT_BASEURL=${{ secrets.PRODUCT_BASEURL_RC }}
             export RELEASE_VERSION="-${VERSION}.el7"
           fi
-
-          ## Set-up example branch dynamicaly ##
+ 
+          ## Use the internal Gitea source for the example in CI ##
+          GITEA_HOST="git.onlyoffice.com"
           TARGET_REPO="ONLYOFFICE/document-server-integration"
+          export EXAMPLE_REPO="https://${GITEA_HOST}/${TARGET_REPO}.git"
+ 
+          ## Set-up example branch dynamicaly (probe Gitea) ##
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${TARGET_REPO}/branches/${REF_BRANCH}")
-
+          -H "Accept: application/json" \
+          -H "Authorization: token ${GITEA_TOKEN}" \
+          "https://${GITEA_HOST}/api/v1/repos/${TARGET_REPO}/branches/${REF_BRANCH}")
+ 
           if [ "$STATUS" = "200" ]; then
             export EXAMPLE_BRANCH="${REF_BRANCH}"
-            echo "Branch '${REF_BRANCH}' found in ${TARGET_REPO}"
+            echo "Branch '${REF_BRANCH}' found in ${GITEA_HOST}/${TARGET_REPO}"
           else
             export EXAMPLE_BRANCH=develop
-            echo "Branch '${REF_BRANCH}' not found, falling back to 'develop'"
+            echo "Branch '${REF_BRANCH}' not found in ${GITEA_HOST}/${TARGET_REPO} (HTTP ${STATUS}), falling back to 'develop'"
           fi
-
+ 
           ## Execute build ##
           docker buildx bake --sbom=true --provenance=mode=max \
             -f docker-bake.hcl ${IMAGES} \
