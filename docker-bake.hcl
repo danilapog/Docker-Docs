@@ -54,7 +54,7 @@ group "apps" {
 target "example" {
     target = "example"
     dockerfile = "${DOCKERFILE}"
-    tags = equal("docker.io",REGISTRY) ? ["danilaworker/${COMPANY_NAME}/${PREFIX_NAME}docs-example:${TAG}"] : [
+    tags = equal("docker.io",REGISTRY) ? ["docker.io/danilaworker/${PREFIX_NAME}docs-example:${TAG}"] : [
                                           "danilaworker/docs-example:${TAG}" ]
     platforms = ["${PLATFORM}"]
     args = {
